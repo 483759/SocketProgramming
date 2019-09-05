@@ -21,8 +21,9 @@ int main(){
 	struct sockaddr_in Client;
 
 	server_socket=socket(PF_INET, SOCK_STREAM, 0);
+	//서버 소켓 생성(인터넷 프로토콜, TCP사용)
 
-	if(server_socket==-1){
+	if(server_socket==-1){	//소켓 생성 실패시
 		printf("Cannot Create Socket\n");
 		exit(0);
 	}
@@ -31,19 +32,25 @@ int main(){
 	server_address.sin_family=AF_INET;
 	server_address.sin_port=htons(SERVER_PORT);
 	server_address.sin_addr.s_addr=inet_addr(SERVER_IP);
+	//family -> 소켓 생성시 지정한 프로토콜에 맞춰줌
+	//port -> 서버 포트번호
+	//addr -> IP주소 저장
 
 	if(bind(server_socket, (struct sockaddr*)&server_address, sizeof(server_address))==-1){
+	//생성한 소켓과 자신의 소켓 주소 바인딩
 		printf("bind() ERROR\n");
 		exit(0);
 	}
 
 	if(listen(server_socket, 3)==-1){
+	//listen을 이용하여 수동 대기모드 진입
 		printf("listen() ERROR");
 		exit(0);
 	}
 
 	size = sizeof(server_address);
 	toClient=accept(server_socket, (struct sockaddr*)&Client, &size);
+	//클라이언트와 연결 설정 성공시 소켓 반환
 
 	if(toClient<0){
 		printf("accept ERROR");
@@ -51,8 +58,10 @@ int main(){
 
 	printf("\nserver_socket=[%d]\n\n", server_socket);
 	printf("\nclient_socket=[%d]\n\n", toClient);
+	//소켓번호 출력
 
 	while(1){
+		//클라이언트와 에코 통신
 		printf(">>");
 		fgets(message, MAX_SEND_SIZE, stdin);
 		if(message[0]=='q'){
@@ -65,6 +74,7 @@ int main(){
 	}
 	close(server_socket);
 	close(toClient);
+	//소켓 연결 해제
 
 	return 0;
 }
